@@ -1,7 +1,16 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+import requests
 
 # Create your views here.
+
+def test(request):
+    response = requests.get('http://192.168.198.140:5555/images/json')
+    data = response.json()
+    return render(request, 'ssh/base.html', {
+        'Id': data['Id'],
+        'RepoTags': data['RepoTags']
+    })
 
 def index(request):
     import paramiko
@@ -19,7 +28,6 @@ def index(request):
     # Print content
     for line in ssh_stdout.readlines():
         print(line.rstrip())
-        return render(request, 'ssh/base.html', {'exit_status' : exit_status})
     # Close ssh connect
     ssh.close()
-    
+    return render(request, 'ssh/base.html', {'exit_status' : exit_status})
